@@ -84,3 +84,61 @@ Account acct = new Account();
 acct.Name = 'Acme';
 acct.Phone = '(415)555-1212';
 acct.NumberOfEmployees = 100;
+
+
+// Casting generic sObjects to specific sObjects using dot notation:
+// Cast a generic sObject to an Account
+Account acct = (Account)myGenericSObject;
+// Now, you can use the dot notation to access fields on Account
+String name = acct.Name;
+String phone = acct.Phone;
+
+// The fields of a generic sObject can be accessed only through the put() and get() methods
+// Generic sObjects can be created only through the newSObject() method
+// To save sObjects as a record (among other things), use Data Manipulation Language (DML)
+// To retrieve a record, use Salesforce Object Query Language (SOQL)
+
+
+// Adding Acme Account to Salesforce using DML:
+// Create the account sObject 
+Account acct = new Account(Name='Acme', Phone='(415)555-1212', NumberOfEmployees=100);
+// Insert the account by using DML
+insert acct;
+// When inserting records, the system assigns an ID for each record
+// Get the new ID on the inserted sObject argument
+ID acctID = acct.Id;
+// Display this ID in the debug log
+System.debug('ID = ' + acctID);
+// Debug log result (the ID will be different in your case)
+// DEBUG|ID = 001D000000JmKkeIAF
+
+// DML statements: insert, update, delete, undelete, upsert and merge (both particular to Salesforce)
+// Each DML statement accepts either a single sObject or a list (or array) of sObjects
+// Operating on a list of sObjects is a more efficient way for processing records
+
+
+// Bulk DML operation:
+// Performing a DML operation on a list of sObjects counts as one DML statement, 
+// not as one statement for each sObject
+// Create a list of contacts
+List<Contact> conList = new List<Contact> {
+  new Contact(FirstName='Joe',LastName='Smith',Department='Finance'),
+    new Contact(FirstName='Kathy',LastName='Smith',Department='Technology'),
+    new Contact(FirstName='Caroline',LastName='Roth',Department='Finance'),
+    new Contact(FirstName='Kim',LastName='Shain',Department='Education')};
+            
+// Bulk insert all contacts with one DML call
+insert conList;
+// List to hold the new contacts to update
+List<Contact> listToUpdate = new List<Contact>();
+// Iterate through the list and add a title only
+//   if the department is Finance
+for(Contact con : conList) {
+  if (con.Department == 'Finance') {
+    con.Title = 'Financial analyst';
+    // Add updated contact sObject to the list.
+    listToUpdate.add(con);
+  }
+}
+// Bulk update all contacts with one DML call
+update listToUpdate;
