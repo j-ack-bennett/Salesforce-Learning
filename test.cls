@@ -28,7 +28,8 @@ for(Integer i=0;i<colors.size();i++) {
 // Class to create an email manager for sending emails
 public class EmailManager {
   // Public method, uses built-in messaging methods from apex class library
-  public void sendMail(String address, String subject, String body) {
+  // Added static so it can be called directly on the class name
+  public static void sendMail(String address, String subject, String body) {
     // Create an email message object
     Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
     String[] toAddresses = new String[] {address};
@@ -64,3 +65,11 @@ public class EmailManager {
     return sendResult;
   }
 }
+
+// Use this to invoke the public method, using anonymous apex execution
+EmailManager em = new EmailManager();
+em.sendMail('Your email address', 'Trailhead Tutorial', '123 body');
+// enter your email address, a subject and body
+
+// Changes to this if sendMail is static
+EmailManager.sendMail('Your email address', 'Trailhead Tutorial', '123 body');
