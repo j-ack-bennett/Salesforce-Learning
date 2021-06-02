@@ -196,3 +196,9 @@ upsert jane2 Contact.fields.Email;
 // Verify that the contact has been updated
 System.assertEquals('Prefers to be contacted by email.',
   [SELECT Description FROM Contact WHERE Id=:jane.Id].Description);
+
+
+// Deleting records for all contacts with the last name Smith:
+Contact[] contactsDel = [SELECT Id FROM Contact WHERE LastName='Smith']; 
+delete contactsDel;
+// Deleted records stay in a recycle bin for 15 days before being deleted permanently
