@@ -55,11 +55,11 @@ public class EmailManager {
     // so we should have only one result.
     for (Messaging.SendEmailResult res : results) {
       if (res.isSuccess()) {
-          System.debug('Email sent successfully');
+        System.debug('Email sent successfully');
       }
       else {
-          sendResult = false;
-          System.debug('The following errors occurred: ' + res.getErrors());                 
+        sendResult = false;
+        System.debug('The following errors occurred: ' + res.getErrors());                 
       }
     }
     return sendResult;
@@ -73,3 +73,14 @@ em.sendMail('Your email address', 'Trailhead Tutorial', '123 body');
 
 // Changes to this if sendMail is static
 EmailManager.sendMail('Your email address', 'Trailhead Tutorial', '123 body');
+
+
+// Creates an sObject variable type of Account and assigns to a new account with the name Acme
+// This is also how you assign fields using the constructor method
+Account acct = new Account(Name='Acme');
+
+// Alternatively you can assign fields using dot notation
+Account acct = new Account();
+acct.Name = 'Acme';
+acct.Phone = '(415)555-1212';
+acct.NumberOfEmployees = 100;
