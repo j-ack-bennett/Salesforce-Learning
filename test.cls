@@ -202,3 +202,36 @@ System.assertEquals('Prefers to be contacted by email.',
 Contact[] contactsDel = [SELECT Id FROM Contact WHERE LastName='Smith']; 
 delete contactsDel;
 // Deleted records stay in a recycle bin for 15 days before being deleted permanently
+
+
+// If a DML operation fails, it returns an exception of type DmlException:
+try {
+  // This causes an exception because 
+  // the required Name field is not provided.
+  Account acct = new Account();
+  // Insert the account 
+  insert acct;
+} catch (DmlException e) {
+  System.debug('A DML exception has occurred: ' + e.getMessage());
+}
+
+
+// Database methods:
+// Database.insert()
+// Database.update()
+// Database.upsert()
+// Database.delete()
+// Database.undelete()
+// Database.merge()
+// Database methods have an optional allOrNone parameter that allows you to specify whether the operation 
+// should partially succeed. When this parameter is set to false, if errors occur on a partial set of records, 
+// the successful records will be committed and errors will be returned for the failed records. 
+// Also, no exceptions are thrown with the partial success option.
+
+// Insert method with allOrNone set to false:
+Database.insert(recordList, false);
+
+// The Database methods return result objects containing success or failure information for each record. 
+// For example, insert and update operations each return an array of Database.SaveResult objects.
+Database.SaveResult[] results = Database.insert(recordList, false);
+// Upsert returns Database.UpsertResult objects, and delete returns Database.DeleteResult objects.
