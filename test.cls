@@ -142,3 +142,57 @@ for(Contact con : conList) {
 }
 // Bulk update all contacts with one DML call
 update listToUpdate;
+
+
+// upsert syntax:
+// upsert sObject | sObject[]​​ field
+// *field is optional*
+upsert sObjectList Account.Fields.MyExternalId;
+
+// Upsert uses the sObject record's primary key (the ID), an idLookup field, 
+// or an external ID field to determine whether it should create a new record or update an existing one:
+// - If the key is not matched, a new object record is created
+// - If the key is matched once, the existing object record is updated
+// - If the key is matched multiple times, an error is generated and the object record is neither inserted or updated
+
+
+// This example shows how upsert updates an existing contact record and inserts a new contact in one call.
+// This upsert call updates the existing Josh contact and inserts a new contact, Kathy
+// Insert the Josh contact
+Contact josh = new Contact(FirstName='Josh',LastName='Kaplan',Department='Finance');       
+insert josh;
+// Josh's record has been inserted
+//   so the variable josh has now an ID
+//   which will be used to match the records by upsert
+josh.Description = 'Josh\'s record has been updated by the upsert operation.';
+// Create the Kathy contact, but don't persist it in the database
+Contact kathy = new Contact(FirstName='Kathy',LastName='Brown',Department='Technology');
+// List to hold the new contacts to upsert
+List<Contact> contacts = new List<Contact> { josh, kathy };
+// Call upsert
+upsert contacts;
+// Result: Josh is updated and Kathy is created.
+
+
+// Example using a specific field on matching records:
+Contact jane = new Contact(
+  FirstName='Jane',
+  LastName='Smith',
+  Email='jane.smith@example.com',
+  Description='Contact of the day'
+);
+insert jane;
+// 1. Upsert using an idLookup field
+// Create a second sObject variable.
+// This variable doesn’t have any ID set.
+Contact jane2 = new Contact(
+  FirstName='Jane',
+  LastName='Smith',  
+  Email='jane.smith@example.com',
+  Description='Prefers to be contacted by email.'
+);
+// Upsert the contact by using the idLookup field for matching.
+upsert jane2 Contact.fields.Email;
+// Verify that the contact has been updated
+System.assertEquals('Prefers to be contacted by email.',
+  [SELECT Description FROM Contact WHERE Id=:jane.Id].Description);
