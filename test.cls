@@ -320,3 +320,32 @@ update queriedContact.Account;
 // children automatically, as long as each child record can be deleted.
 Account[] queriedAccounts = [SELECT Id FROM Account WHERE Name='SFDC Account'];
 delete queriedAccounts;
+
+
+// A SOQL query included in apex code: 
+// SOQL statement must be wrapped in [], which will return a value in an array
+// of sObjects. This example returns an array of Account sObjects with two fields, name and phone.
+Account[] accts = [SELECT Name,Phone FROM Account];
+
+
+// Syntax for a basic SOQL query, the WHERE clause is optional
+SELECT fields FROM ObjectName [WHERE Condition]
+// This example retrieves accounts and gets name and phone for each account
+SELECT Name,Phone FROM Account
+// 1. SELECT Name,Phone: This part lists the fields that you would like to retrieve. 
+// The fields are specified after the SELECT keyword in a comma-delimited list. 
+// Or you can specify only one field, in which case no comma is necessary (e.g. SELECT Phone)
+// 2. FROM Account: This part specifies the standard or custom object that you want to retrieve. 
+// In this example, it’s Account. For a custom object called Invoice_Statement, it is Invoice_Statement__c.
+
+// Unlike other SQL languages, you can’t specify * for all fields. You must specify every field you 
+// want to get explicitly. If you try to access a field you haven’t specified in the SELECT clause, 
+// you’ll get an error because the field hasn’t been retrieved.
+
+// To specify a single account when querying, you put the info into the where condition:
+SELECT Name,Phone FROM Account WHERE Name='SFDC Computing'
+// To query with more condtions, use parentheses with AND, OR operators:
+SELECT Name,Phone FROM Account WHERE (Name='SFDC Computing' AND NumberOfEmployees>25)
+// This query returns all SFDC Computing accounts, or all accounts with more than 25 employees 
+// whose billing city is Los Angeles.
+SELECT Name,Phone FROM Account WHERE (Name='SFDC Computing' OR (NumberOfEmployees>25 AND BillingCity='Los Angeles'))
