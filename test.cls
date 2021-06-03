@@ -349,3 +349,46 @@ SELECT Name,Phone FROM Account WHERE (Name='SFDC Computing' AND NumberOfEmployee
 // This query returns all SFDC Computing accounts, or all accounts with more than 25 employees 
 // whose billing city is Los Angeles.
 SELECT Name,Phone FROM Account WHERE (Name='SFDC Computing' OR (NumberOfEmployees>25 AND BillingCity='Los Angeles'))
+
+// Instead of using the equal operator (=) for comparison, you can perform fuzzy matches by using the 
+// LIKE operator. For example, you can retrieve all accounts whose names start with SFDC by using 
+// this condition: WHERE Name LIKE 'SFDC%'. The % wildcard character matches any or no character. 
+// The _ character in contrast can be used to match just one character.
+
+// Querys won't be sorted in any order when executed, but you can use the ORDER By clause on a specific field:
+SELECT Name,Phone FROM Account ORDER BY Name
+// Queries will default to an alphabetical order, the previous example is the same as:
+SELECT Name,Phone FROM Account ORDER BY Name ASC
+// To order in descending order, use:
+SELECT Name,Phone FROM Account ORDER BY Name DESC
+
+// You can limit the number of records using LIMIT n, n being the number of records to limit by
+Account oneAccountOnly = [SELECT Name,Phone FROM Account LIMIT 1];
+
+// Combining clauses will look like this:
+SELECT Name,Phone FROM Account 
+                   WHERE (Name = 'SFDC Computing' AND NumberOfEmployees>25)
+                   ORDER BY Name
+                   LIMIT 10
+
+// SOQL statements in Apex can reference Apex code variables and expressions if they are preceded by a colon (:). 
+// The use of a local variable within a SOQL statement is called a bind.
+String targetDepartment = 'Wingo';
+Contact[] techContacts = [SELECT FirstName,LastName 
+                          FROM Contact WHERE Department=:targetDepartment];
+
+
+// This is a query between Account and Contacts as they are related to each other
+// The part in parentheses is the inner query to get all contacts associated with each returned account
+// The FROM clause specifies the Contacts relationship, which is a default relationship on Account
+SELECT Name, (SELECT LastName FROM Contacts) FROM Account WHERE Name = 'SFDC Computing'
+
+// This example embeds the example SOQL query in Apex and shows how to get the child records from the SOQL 
+// result by using the Contacts relationship name on the sObject.
+Account[] acctsWithContacts = [SELECT Name, (SELECT FirstName,LastName FROM Contacts)
+                               FROM Account 
+                               WHERE Name = 'SFDC Computing'];
+// Get child records
+Contact[] cts = acctsWithContacts[0].Contacts;
+System.debug('Name of first associated contact: ' 
+             + cts[0].FirstName + ', ' + cts[0].LastName);
