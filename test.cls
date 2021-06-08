@@ -392,3 +392,27 @@ Account[] acctsWithContacts = [SELECT Name, (SELECT FirstName,LastName FROM Cont
 Contact[] cts = acctsWithContacts[0].Contacts;
 System.debug('Name of first associated contact: ' 
              + cts[0].FirstName + ', ' + cts[0].LastName);
+
+
+// SOQL (Salesforce Object Query Language) queries data, whereas SOSL (Salesforce Object Search Language) performs text searches in records
+// AN inline SOSL query that searches for accounts and contacts that have any fields with 'SFDC'
+List<List<SObject>> searchList = [FIND 'SFDC' IN ALL FIELDS 
+                                      RETURNING Account(Name), Contact(FirstName,LastName)];
+
+// SOSL can search all objects, where SOQL can only search one standard or custom object at a time
+// The search query in the Query Editor and the API must be enclosed within curly brackets {Wingo}. 
+// In contrast, in Apex the search query is enclosed within single quotes ('Wingo').
+
+
+// Basic SOSL search query
+FIND 'SearchQuery' [IN SearchGroup] [RETURNING ObjectsAndFields]
+//SearchGroup is optional. It is the scope of the fields to search. If not specified, the default search scope is all fields. 
+// SearchGroup can take one of the following values:
+// ALL FIELDS
+// NAME FIELDS
+// EMAIL FIELDS
+// PHONE FIELDS
+// SIDEBAR FIELDS
+// ObjectsAndFields is optional. It is the information to return in the search result—a list of one or more sObjects and, 
+// within each sObject, list of one or more fields, with optional values to filter against. 
+// If not specified, the search results contain the IDs of all objects found.
