@@ -392,3 +392,45 @@ Account[] acctsWithContacts = [SELECT Name, (SELECT FirstName,LastName FROM Cont
 Contact[] cts = acctsWithContacts[0].Contacts;
 System.debug('Name of first associated contact: ' 
              + cts[0].FirstName + ', ' + cts[0].LastName);
+
+
+// You can traverse a relationship from a child object (contact) to a field on its parent (Account.Name) 
+// by using dot notation. For example, the following Apex snippet queries contact records whose first name 
+// is Carol and is able to retrieve the name of Carol’s associated account by traversing the relationship 
+// between accounts and contacts.
+Contact[] cts = [SELECT Account.Name FROM Contact 
+                 WHERE FirstName = 'Carol' AND LastName='Ruiz'];
+Contact carol = cts[0];
+String acctName = carol.Account.Name;
+System.debug('Carol\'s account name is ' + acctName);
+
+
+/// By using SOQL for loops, you can avoid hitting the heap size limit
+// SOQL for loops iterate over all of the sObject records returned by a SOQL query. The syntax of a SOQL for loop:
+for (variable : [soql_query]) {
+    code_block
+}
+// or:
+for (variable_list : [soql_query]) {
+    code_block
+}
+
+// It is preferable to use the sObject list format of the SOQL for loop as the loop executes once 
+// for each batch of 200 sObjects. Doing so enables you to work on batches of records and perform 
+// DML operations in batch, which helps avoid reaching governor limits.
+insert new Account[]{new Account(Name = 'for loop 1'), 
+                     new Account(Name = 'for loop 2'), 
+                     new Account(Name = 'for loop 3')};
+// The sObject list format executes the for loop once per returned batch
+// of records
+Integer i=0;
+Integer j=0;
+for (Account[] tmp : [SELECT Id FROM Account WHERE Name LIKE 'for loop _']) {
+    j = tmp.size();
+    i++;
+}
+System.assertEquals(3, j); // The list should have contained the three accounts
+                       // named 'yyy'
+System.assertEquals(1, i); // Since a single batch can hold up to 200 records and,
+                       // only three records should have been returned, the 
+                       // loop should have executed only once
